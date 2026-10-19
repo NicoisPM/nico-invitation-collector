@@ -341,6 +341,7 @@
     <div class="preview-bar">
       <span style="font-size:13px; font-weight:600; color:#334155;">🔗 快速进入前台邀请函预览：</span>
       <div class="preview-links">
+        <a href="/themes" target="_blank" class="badge-link">选择邀请函主题</a>
         <a href="/red-envelope" target="_blank" class="badge-link">🔴 红色党建 (信封版)</a>
         <a href="/red" target="_blank" class="badge-link">🔴 直入版</a>
         <a href="/green-envelope" target="_blank" class="badge-link">🟢 绿色生态 (信封版)</a>
@@ -362,6 +363,13 @@
           <option value="green-eco">绿色青年生态</option>
           <option value="hk-skyline">维港夜景港澳</option>
           <option value="default">金调标准纸质</option>
+          <option value="harbor">海湾蓝金</option>
+          <option value="arcade">青绿创作室</option>
+          <option value="neon">极夜荧绿</option>
+          <option value="midnight">曜石香槟</option>
+          <option value="prism">棱镜未来</option>
+          <option value="editorial">纸上共创</option>
+
         </select>
       </div>
       <div style="font-size:13px; color:var(--text-muted);" id="resultCountTip">加载中...</div>
@@ -396,7 +404,7 @@
           <polyline points="10 9 9 9 8 9"></polyline>
         </svg>
         <strong>暂无报名数据</strong>
-        <p>在前台邀请函第 7 页填写表单后，数据将在此秒级实时呈现。</p>
+        <p>在邀请函报名区提交信息后，数据将在此呈现。</p>
       </div>
     </div>
 
@@ -447,11 +455,14 @@
       }
       emptyView.style.display = 'none';
 
+      const themeNames={harbor:'海湾蓝金',arcade:'青绿创作室',neon:'极夜荧绿',midnight:'曜石香槟',prism:'棱镜未来',editorial:'纸上共创'};
+      const filter=document.getElementById('slugFilter');
+      list.forEach(item=>{const source=item.nico_invitation_slug||'default';if(!Array.from(filter.options).some(o=>o.value===source)){const option=document.createElement('option');option.value=source;option.textContent=themeNames[source]||source;filter.appendChild(option);}});
       list.forEach(item => {
         const tr = document.createElement('tr');
         
         let pillClass = 'pill-gold';
-        let pillName = '金调标准';
+        let pillName = themeNames[item.nico_invitation_slug] || (item.nico_invitation_slug && item.nico_invitation_slug!=='default' ? item.nico_invitation_slug : '金调标准');
         if (item.nico_invitation_slug === 'red-party') {
           pillClass = 'pill-red'; pillName = '红色党建';
         } else if (item.nico_invitation_slug === 'green-eco') {
@@ -467,7 +478,7 @@
           <td style="font-family:monospace; font-size:13px;">${escapeHtml(item.phone)}</td>
           <td><span style="font-weight:600; color:#0f172a;">${item.count || 1}</span> 人</td>
           <td style="color:#64748b; font-size:12.5px;">${escapeHtml(item.note || '-')}</td>
-          <td><span class="pill ${pillClass}">${pillName}</span></td>
+          <td><span class="pill ${pillClass}">${escapeHtml(pillName)}</span></td>
           <td style="font-size:12px; color:#64748b; white-space:nowrap;">${escapeHtml(item.created_at)}</td>
           <td>
             <button class="del-btn" onclick="deleteSignup(${item.id})">删除</button>

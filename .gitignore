@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.DS_Store
+# 生成产物与本地数据
+output/
+data/signups.json
+# 参考设计图（体积大，不入库）
+templates/参考*/

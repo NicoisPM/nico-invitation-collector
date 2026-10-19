@@ -1,0 +1,87 @@
+{
+  "theme": "neon",
+  "envelope": false,
+  "motion": "subtle",
+  "event_slug": "coding1024-weekend",
+  "title": "创造者相聚计划",
+  "brand": "NICO · 邀请函模板",
+  "subtitle": "每一个好想法，都值得一次认真相聚。",
+  "date": "活动时间由配置提供",
+  "location": "活动地点由配置提供",
+  "hero": {
+    "display": "2026",
+    "eyebrow": "一封给创造者的邀请",
+    "lines": [
+      "让灵感相遇，",
+      "让创造发生。"
+    ],
+    "statement": "封面、活动价值、日程与报名，以统一视觉连成一份完整邀请。"
+  },
+  "registration_mode": "local",
+  "registration_url": "",
+  "registration_label": "前往官网报名",
+  "closing_title": "期待与你，\n在现场相见。",
+  "closing_copy": "正式使用时配置真实报名入口。",
+  "registration_steps": [],
+  "footer": "模板预览 · 活动内容与报名入口可配置。",
+  "sections": [
+    {
+      "id": "highlights",
+      "type": "highlights",
+      "nav": "活动亮点",
+      "title": "为一场相聚，\n找到值得出发的理由。",
+      "items": [
+        {
+          "value": "01",
+          "label": "共同探索",
+          "detail": "把活动的核心价值放在这里。"
+        },
+        {
+          "value": "02",
+          "label": "面对面对话",
+          "detail": "连接不同视角与真实经验。"
+        },
+        {
+          "value": "03",
+          "label": "看见新可能",
+          "detail": "呈现成果，让交流走向下一步。"
+        },
+        {
+          "value": "04",
+          "label": "一起参与",
+          "detail": "用明确的行动邀请大家加入。"
+        }
+      ]
+    },
+    {
+      "id": "schedule",
+      "type": "timeline",
+      "nav": "查看日程",
+      "kicker": "SCHEDULE",
+      "title": "每一步，\n都有清楚的安排。",
+      "days": [
+        {
+          "date": "相聚",
+          "title": "日程示例",
+          "items": [
+            {
+              "time": "开场",
+              "title": "欢迎与介绍",
+              "detail": "根据真实活动资料替换。"
+            },
+            {
+              "time": "交流",
+              "title": "主题分享与对话",
+              "detail": "时间、嘉宾与地点均从配置读取。"
+            },
+            {
+              "time": "行动",
+              "title": "一起走向下一步",
+              "detail": "以一个清楚的行动收束。"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

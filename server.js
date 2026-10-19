@@ -50,6 +50,15 @@ const ROUTE_MAP = {
   '/default-envelope': 'nico-invitation-envelope.html',
   '/gz': 'guangzhou-forum.html',
   '/admin': 'admin.html',
+  '/themes': 'design-gallery.html',
+};
+
+// 旧母版沿用原有分类；新主题及事件保留自身标识，方便后台按活动筛选。
+const LEGACY_SLUGS = {
+  'red': 'red-party', 'red-party': 'red-party', '2026-red-party': 'red-party',
+  'green': 'green-eco', 'green-eco': 'green-eco', '2026-green-eco': 'green-eco',
+  'hk': 'hk-skyline', 'hk-skyline': 'hk-skyline', '2026-hk': 'hk-skyline',
+  'default': 'default', 'default-slug': 'default',
 };
 
 // 读取全部报名数据
@@ -121,12 +130,10 @@ const server = http.createServer((req, res) => {
         const title = (body.title || '').trim();
         const count = parseInt(body.count, 10) || 1;
         const note = (body.note || '').trim();
-        let rawSlug = (body.nico_invitation_slug || body.slug || 'default').trim().toLowerCase();
-        let nico_invitation_slug = 'default';
-        if (rawSlug.includes('red')) nico_invitation_slug = 'red-party';
-        else if (rawSlug.includes('green')) nico_invitation_slug = 'green-eco';
-        else if (rawSlug.includes('hk')) nico_invitation_slug = 'hk-skyline';
-        else nico_invitation_slug = 'default';
+        const rawSlug = String(body.nico_invitation_slug || body.slug || 'default').trim().toLowerCase();
+        const nico_invitation_slug = Object.prototype.hasOwnProperty.call(LEGACY_SLUGS, rawSlug)
+          ? LEGACY_SLUGS[rawSlug]
+          : (/^[a-z0-9_-]+$/.test(rawSlug) ? rawSlug : 'default');
 
         if (!name) {
           res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
@@ -268,12 +275,21 @@ const server = http.createServer((req, res) => {
   }
 
   // ========================== 静态文件托管 ==========================
+
+  let staticPathname;
+  try {
+    staticPathname = decodeURIComponent(pathname);
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('请求路径编码无效');
+    return;
+  }
   
   let targetFile = '';
-  if (ROUTE_MAP[pathname]) {
-    targetFile = path.join(TEMPLATES_DIR, ROUTE_MAP[pathname]);
+  if (ROUTE_MAP[staticPathname]) {
+    targetFile = path.join(TEMPLATES_DIR, ROUTE_MAP[staticPathname]);
   } else {
-    const safePath = path.normalize(pathname).replace(/^(\.\.[\/\\])+/, '');
+    const safePath = path.normalize(staticPathname).replace(/^(\.\.[\/\\])+/, '');
     const templateCandidate = path.join(TEMPLATES_DIR, safePath);
     const rootCandidate = path.join(__dirname, safePath);
     
@@ -331,6 +347,7 @@ server.listen(PORT, () => {
   console.log(`🚀 邀请函全栈服务已就绪！(Node.js Zero-Dependency Server)`);
   console.log(`======================================================`);
   console.log(`📊 管理后台入口:   http://localhost:${PORT}/admin`);
+  console.log(`🎨 邀请函主题库:   http://localhost:${PORT}/themes`);
   console.log(`🔴 红色党建直入:   http://localhost:${PORT}/red`);
   console.log(`✉️ 红色党建信封:   http://localhost:${PORT}/red-envelope`);
   console.log(`🟢 绿色生态直入:   http://localhost:${PORT}/green`);

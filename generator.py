@@ -20,6 +20,7 @@ import sys
 import json
 import argparse
 import re
+import time
 
 TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 
@@ -34,7 +35,68 @@ THEME_MAP = {
     'default': ('default', '典雅金调标准版（暖纸烫金）', 'nico-invitation-framework.html', 'nico-invitation-envelope.html'),
 }
 
+# 新一代邀请函使用结构化内容渲染器；原有 4 主题 / 8 款母版保持独立。
+DESIGN_THEMES = {
+    'harbor': '海湾蓝金',
+    'arcade': '青绿创作室',
+    'neon': '极夜荧绿',
+    'midnight': '曜石香槟',
+    'prism': '棱镜未来',
+    'editorial': '纸上共创',
+}
+for number, (theme_key, theme_name) in enumerate(DESIGN_THEMES.items(), start=5):
+    THEME_MAP[theme_key] = (theme_key, theme_name, None, None)
+    THEME_MAP[str(number)] = THEME_MAP[theme_key]
+
 OUTPUT_BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'output')
+
+
+def resolve_output_path(title, theme_slug, output_path=None):
+    """为每个活动选择独立目录，并阻止通过相对路径或软链接覆盖母版。"""
+    timestamp_slug = time.strftime('%Y%m%d_%H%M%S')
+    folder_name = re.sub(r'[^\w\u4e00-\u9fa5_-]', '_', title)[:30] if title else f'{theme_slug}_{timestamp_slug}'
+    folder_name = folder_name or f'invite_{timestamp_slug}'
+    project_dir = os.path.join(OUTPUT_BASE_DIR, folder_name)
+    if not output_path:
+        output_path = os.path.join(project_dir, 'index.html')
+    else:
+        output_path = os.fspath(output_path)
+        abs_target = os.path.realpath(os.path.abspath(output_path))
+        template_root = os.path.realpath(TEMPLATES_DIR)
+        if os.path.commonpath((abs_target, template_root)) == template_root:
+            print("⚠️ [安全防御生效] 严禁直接修改或覆盖 templates/ 模板目录！已自动重定向至 output/ 专属目录。")
+            output_path = os.path.join(project_dir, 'index.html')
+        elif not os.path.isabs(output_path) and os.path.normpath(output_path).split(os.sep)[0] not in ('output', 'dist'):
+            output_path = os.path.join(project_dir, os.path.basename(output_path))
+    output_path = os.path.abspath(output_path)
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    return output_path
+
+
+def save_invitation(html, theme_slug, theme_name, envelope, config_data, output_path):
+    out_dir = os.path.dirname(os.path.abspath(output_path))
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(html)
+
+    event_json_path = os.path.join(out_dir, 'event.json')
+    with open(event_json_path, 'w', encoding='utf-8') as f:
+        json.dump({
+            **config_data,
+            'theme': theme_slug,
+            'envelope': envelope,
+            'generated_at': time.strftime('%Y-%m-%d %H:%M:%S'),
+        }, f, ensure_ascii=False, indent=2)
+
+    print("\n" + "="*56)
+    print("🎉 邀请函成功生成！(已完全隔离至独立产出目录)")
+    print(f"📌 所用主题: {theme_name}")
+    print(f"✉️  信封形态: {'【信封进入版】' if envelope else '【直接进入版】'}")
+    print(f"📁 专属目录: {os.path.abspath(out_dir)}")
+    print(f"📄 页面路径: {os.path.abspath(output_path)}")
+    print(f"📋 参数备份: {os.path.abspath(event_json_path)}")
+    print("💡 预览方式: 双击打开，或运行 `node server.js` 启动全栈测试！")
+    print("="*56 + "\n")
+    return True
 
 def render_nico_invitation(theme='red', envelope=True, config_data=None, output_path=None):
     if config_data is None:
@@ -42,6 +104,13 @@ def render_nico_invitation(theme='red', envelope=True, config_data=None, output_
 
     theme_info = THEME_MAP.get(str(theme).lower(), THEME_MAP['red'])
     slug, name, plain_file, env_file = theme_info
+
+    if slug in DESIGN_THEMES:
+        from invitation_design import render_invitation
+        render_config = {**config_data, 'theme': slug, 'envelope': envelope}
+        html = render_invitation(render_config)
+        output_path = resolve_output_path(config_data.get('title', ''), slug, output_path)
+        return save_invitation(html, slug, name, envelope, render_config, output_path)
     
     src_filename = env_file if envelope else plain_file
     src_path = os.path.join(TEMPLATES_DIR, src_filename)
@@ -63,31 +132,7 @@ def render_nico_invitation(theme='red', envelope=True, config_data=None, output_
     phone = config_data.get('phone', '')
 
     # ==================== 产出隔离规则：严禁污染 templates 目录 ====================
-    import time
-    timestamp_slug = time.strftime('%Y%m%d_%H%M%S')
-    folder_name = re.sub(r'[^\w\u4e00-\u9fa5_-]', '_', title)[:30] if title else f'{slug}_{timestamp_slug}'
-    if not folder_name:
-        folder_name = f'invite_{timestamp_slug}'
-
-    # 如果未指定 output_path，默认创建独立专属目录：output/<folder_name>/index.html
-    if not output_path:
-        project_dir = os.path.join(OUTPUT_BASE_DIR, folder_name)
-        output_path = os.path.join(project_dir, 'index.html')
-    else:
-        # 安全防御：严禁写入 templates 目录
-        abs_target = os.path.abspath(output_path)
-        if abs_target.startswith(os.path.abspath(TEMPLATES_DIR)):
-            print("⚠️ [安全防御生效] 严禁直接修改或覆盖 templates/ 模板目录！已自动重定向至 output/ 专属目录。")
-            project_dir = os.path.join(OUTPUT_BASE_DIR, folder_name)
-            output_path = os.path.join(project_dir, 'index.html')
-        elif not os.path.isabs(output_path) and not output_path.startswith(('output', 'dist')):
-            # 如果是相对文件名，默认统一归入 output/<folder_name>/
-            project_dir = os.path.join(OUTPUT_BASE_DIR, folder_name)
-            output_path = os.path.join(project_dir, os.path.basename(output_path))
-        else:
-            project_dir = os.path.dirname(os.path.abspath(output_path))
-
-    os.makedirs(project_dir, exist_ok=True)
+    output_path = resolve_output_path(title, slug, output_path)
     price = config_data.get('price')
     phone = config_data.get('phone')
 
@@ -177,37 +222,7 @@ def render_nico_invitation(theme='red', envelope=True, config_data=None, output_
         else:
             print(f"ℹ️ [DOM 状态] 当前校验结果: open={new_open}, close={new_close}")
 
-    # 确保输出目录存在
-    out_dir = os.path.dirname(os.path.abspath(output_path))
-    if out_dir and not os.path.exists(out_dir):
-        os.makedirs(out_dir, exist_ok=True)
-
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(html)
-
-    # 隔离规则配套：同步保存 event.json 到专属目录，便于打包交付与回溯
-    event_json_path = os.path.join(out_dir, 'event.json')
-    try:
-        with open(event_json_path, 'w', encoding='utf-8') as f:
-            json.dump({
-                'theme': slug,
-                'envelope': envelope,
-                **config_data,
-                'generated_at': time.strftime('%Y-%m-%d %H:%M:%S'),
-            }, f, ensure_ascii=False, indent=2)
-    except Exception as e:
-        pass
-
-    print("\n" + "="*56)
-    print(f"🎉 邀请函成功生成！(已完全隔离至独立产出目录)")
-    print(f"📌 所用主题: {name}")
-    print(f"✉️  信封形态: {'【3D撕火漆开信封版】' if envelope else '【直接进入版】'}")
-    print(f"📁 专属目录: {os.path.abspath(out_dir)}")
-    print(f"📄 页面路径: {os.path.abspath(output_path)}")
-    print(f"📋 参数备份: {os.path.abspath(event_json_path)}")
-    print(f"💡 预览方式: 双击打开，或运行 `node server.js` 启动全栈测试！")
-    print("="*56 + "\n")
-    return True
+    return save_invitation(html, slug, name, envelope, config_data, output_path)
 
 def interactive_wizard():
     print("\n" + "="*58)
@@ -219,8 +234,10 @@ def interactive_wizard():
     print("  [2] 绿色青年生态版（五桂山清新水墨 · 活力创新）")
     print("  [3] 维港夜景港澳版（香港天际线深蓝 · 国际高端）")
     print("  [4] 典雅金调标准版（暖纸烫金宣纸 · 通用政商）")
+    for number, theme_name in enumerate(DESIGN_THEMES.values(), start=5):
+        print(f"  [{number}] {theme_name}（新一代活动邀请函）")
     
-    choice = input("👉 请输入序号 (1-4，默认 1): ").strip() or "1"
+    choice = input("👉 请输入序号 (1-10，默认 1): ").strip() or "1"
     
     print("\n【步骤 2/4】是否需要 3D 撕火漆开信封动画？")
     print("  • 信封版：含物理撕纸音效、手势触发 BGM、180°翻折封盖与专属火漆（强仪式感）")
@@ -253,7 +270,7 @@ def interactive_wizard():
 def main():
     parser = argparse.ArgumentParser(description="H5 邀请函生成工具")
     parser.add_argument('--config', type=str, help="指定 JSON 配置文件路径")
-    parser.add_argument('--theme', type=str, choices=['red', 'green', 'hk', 'default', '1', '2', '3', '4'], default='red', help="主题风格")
+    parser.add_argument('--theme', type=str, choices=list(THEME_MAP), default=None, help="主题风格（原有 4 主题或 6 套新邀请函主题）")
     parser.add_argument('--envelope', action='store_true', default=None, help="启用 3D 信封动画")
     parser.add_argument('--no-envelope', action='store_true', help="禁用 3D 信封动画")
     parser.add_argument('--title', type=str, help="活动标题")
@@ -262,6 +279,9 @@ def main():
     parser.add_argument('--location', type=str, help="活动地点")
     parser.add_argument('--organizer', type=str, help="主办单位")
     parser.add_argument('--price', type=str, help="报名费用说明")
+    parser.add_argument('--registration-mode', choices=['external', 'local'], help="新主题报名方式：活动官网 / 本地报名后台")
+    parser.add_argument('--registration-url', type=str, help="活动官网报名链接（external 模式）")
+    parser.add_argument('--motion', choices=['subtle', 'none'], help="新主题轻动效 / 静态显示")
     parser.add_argument('--output', '-o', type=str, default=None, help="输出 HTML 文件路径 (默认创建独立目录 output/<活动名>/index.html)")
 
     args = parser.parse_args()
@@ -287,8 +307,11 @@ def main():
     if args.location: config_data['location'] = args.location
     if args.organizer: config_data['organizer'] = args.organizer
     if args.price: config_data['price'] = args.price
+    if args.registration_mode: config_data['registration_mode'] = args.registration_mode
+    if args.registration_url: config_data['registration_url'] = args.registration_url
+    if args.motion: config_data['motion'] = args.motion
 
-    theme = config_data.get('theme', args.theme)
+    theme = args.theme or config_data.get('theme', 'red')
     envelope = True
     if args.no_envelope:
         envelope = False
@@ -297,9 +320,10 @@ def main():
     elif 'envelope' in config_data:
         envelope = bool(config_data['envelope'])
 
-    output = args.output or config_data.get('output', 'my-nico-invitation.html')
+    output = args.output or config_data.get('output')
 
-    render_nico_invitation(theme=theme, envelope=envelope, config_data=config_data, output_path=output)
+    if not render_nico_invitation(theme=theme, envelope=envelope, config_data=config_data, output_path=output):
+        raise SystemExit(1)
 
 if __name__ == '__main__':
     main()
