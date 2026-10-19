@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>活动邀请函 · 报名数据管理后台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --gold: #b45309;
+      --gold-light: #fef3c7;
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --danger: #ef4444;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      padding: 28px 20px 60px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+    }
+
+    /* 顶部导航 */
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* 按钮通用 */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+    }
+    .btn-primary {
+      background-color: #0f172a;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background-color: #1e293b;
+    }
+    .btn-success {
+      background-color: #059669;
+      color: #fff;
+    }
+    .btn-success:hover {
+      background-color: #047857;
+    }
+    .btn-outline {
+      background-color: #fff;
+      border-color: var(--border);
+      color: var(--text-main);
+    }
+    .btn-outline:hover {
+      background-color: #f1f5f9;
+    }
+
+    /* 统计卡片区 */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      position: relative;
+    }
+    .stat-label {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .stat-val {
+      font-size: 32px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 6px;
+      line-height: 1.1;
+    }
+    .stat-tag {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    /* 模板快速跳转卡片 */
+    .preview-bar {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .preview-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .badge-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      color: #334155;
+      transition: all 0.15s;
+    }
+    .badge-link:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    /* 筛选与搜索工具条 */
+    .toolbar {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 16px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .search-box {
+      display: flex;
+      gap: 10px;
+      flex: 1;
+      max-width: 460px;
+    }
+    .input {
+      width: 100%;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13.5px;
+      outline: none;
+      transition: border 0.15s;
+    }
+    .input:focus {
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+    }
+    .select {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13.5px;
+      outline: none;
+      background-color: #fff;
+    }
+
+    /* 表格容器 */
+    .table-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      overflow-x: auto;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13.5px;
+    }
+    th {
+      background: #f8fafc;
+      padding: 12px 18px;
+      font-weight: 600;
+      color: #475569;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:hover td {
+      background-color: #f8fafc;
+    }
+
+    /* 状态与徽章 */
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+    .pill-red { background: #fee2e2; color: #b91c1c; }
+    .pill-green { background: #dcfce7; color: #15803d; }
+    .pill-blue { background: #e0f2fe; color: #0369a1; }
+    .pill-gold { background: #fef3c7; color: #b45309; }
+
+    .del-btn {
+      color: #ef4444;
+      background: none;
+      border: none;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .del-btn:hover {
+      background-color: #fee2e2;
+    }
+
+    /* 空状态 */
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .empty-state p {
+      font-size: 14px;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- 顶部总览 -->
+    <header>
+      <div class="brand">
+        <h1>📊 活动邀请函 · 报名数据管理后台</h1>
+        <p>实时监控 4 套主题邀请函的访客报名与参会回执，支持一键导出 Excel</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline" onclick="loadSignups()">🔄 刷新列表</button>
+        <button class="btn btn-success" onclick="exportCSV()">📥 导出 Excel (CSV)</button>
+        <button class="btn btn-primary" onclick="mockTestSignup()">➕ 模拟新增一条</button>
+      </div>
+    </header>
+
+    <!-- 统计卡片 -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-tag">总计</span>
+        <div class="stat-label">累计报名记录</div>
+        <div class="stat-val" id="stat-total">0</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-tag" style="background:#dcfce7; color:#15803d;">今日</span>
+        <div class="stat-label">今日新增报名</div>
+        <div class="stat-val" id="stat-today">0</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-tag">参会</span>
+        <div class="stat-label">参会总人次</div>
+        <div class="stat-val" id="stat-headcount">0</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-tag">覆盖</span>
+        <div class="stat-label">覆盖企事业单位</div>
+        <div class="stat-val" id="stat-companies">0</div>
+      </div>
+    </section>
+
+    <!-- 快捷预览条 -->
+    <div class="preview-bar">
+      <span style="font-size:13px; font-weight:600; color:#334155;">🔗 快速进入前台邀请函预览：</span>
+      <div class="preview-links">
+        <a href="/red-envelope" target="_blank" class="badge-link">🔴 红色党建 (信封版)</a>
+        <a href="/red" target="_blank" class="badge-link">🔴 直入版</a>
+        <a href="/green-envelope" target="_blank" class="badge-link">🟢 绿色生态 (信封版)</a>
+        <a href="/green" target="_blank" class="badge-link">🟢 直入版</a>
+        <a href="/hk-envelope" target="_blank" class="badge-link">🌃 维港夜景 (信封版)</a>
+        <a href="/hk" target="_blank" class="badge-link">🌃 直入版</a>
+        <a href="/default-envelope" target="_blank" class="badge-link">📜 金调标准 (信封版)</a>
+        <a href="/default" target="_blank" class="badge-link">📜 直入版</a>
+      </div>
+    </div>
+
+    <!-- 筛选工具条 -->
+    <div class="toolbar">
+      <div class="search-box">
+        <input type="text" id="searchInput" class="input" placeholder="按姓名、单位、手机号快速搜索..." oninput="debounceFilter()">
+        <select id="slugFilter" class="select" onchange="loadSignups()">
+          <option value="">全部模板来源</option>
+          <option value="red-party">红色党建国资</option>
+          <option value="green-eco">绿色青年生态</option>
+          <option value="hk-skyline">维港夜景港澳</option>
+          <option value="default">金调标准纸质</option>
+        </select>
+      </div>
+      <div style="font-size:13px; color:var(--text-muted);" id="resultCountTip">加载中...</div>
+    </div>
+
+    <!-- 报名名单表格 -->
+    <div class="table-card">
+      <table id="signupsTable">
+        <thead>
+          <tr>
+            <th>姓名</th>
+            <th>职务</th>
+            <th>单位 / 企业</th>
+            <th>手机号码</th>
+            <th>人数</th>
+            <th>备注 / 诉求</th>
+            <th>来源模板</th>
+            <th>报名时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- 动态填充 -->
+        </tbody>
+      </table>
+      <div id="emptyView" class="empty-state" style="display:none;">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 10px; display:block;">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <strong>暂无报名数据</strong>
+        <p>在前台邀请函第 7 页填写表单后，数据将在此秒级实时呈现。</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let filterTimer = null;
+    function debounceFilter() {
+      clearTimeout(filterTimer);
+      filterTimer = setTimeout(loadSignups, 250);
+    }
+
+    async function loadSignups() {
+      const keyword = document.getElementById('searchInput').value.trim();
+      const slug = document.getElementById('slugFilter').value;
+      
+      const params = new URLSearchParams();
+      if (keyword) params.append('keyword', keyword);
+      if (slug) params.append('slug', slug);
+
+      try {
+        const res = await fetch(`/api/signups?${params.toString()}`);
+        const result = await res.json();
+        if (result.code === 0) {
+          renderData(result.data.list, result.data.stats);
+        }
+      } catch (err) {
+        console.error('获取报名列表失败', err);
+      }
+    }
+
+    function renderData(list, stats) {
+      // 渲染统计卡片
+      document.getElementById('stat-total').textContent = stats.total;
+      document.getElementById('stat-today').textContent = stats.today;
+      document.getElementById('stat-headcount').textContent = stats.headcount;
+      document.getElementById('stat-companies').textContent = stats.companies;
+
+      document.getElementById('resultCountTip').textContent = `共显示 ${list.length} 条记录`;
+
+      const tbody = document.getElementById('tableBody');
+      const emptyView = document.getElementById('emptyView');
+      tbody.innerHTML = '';
+
+      if (!list || list.length === 0) {
+        emptyView.style.display = 'block';
+        return;
+      }
+      emptyView.style.display = 'none';
+
+      list.forEach(item => {
+        const tr = document.createElement('tr');
+        
+        let pillClass = 'pill-gold';
+        let pillName = '金调标准';
+        if (item.nico_invitation_slug === 'red-party') {
+          pillClass = 'pill-red'; pillName = '红色党建';
+        } else if (item.nico_invitation_slug === 'green-eco') {
+          pillClass = 'pill-green'; pillName = '绿色生态';
+        } else if (item.nico_invitation_slug === 'hk-skyline') {
+          pillClass = 'pill-blue'; pillName = '维港夜景';
+        }
+
+        tr.innerHTML = `
+          <td><strong>${escapeHtml(item.name)}</strong></td>
+          <td>${escapeHtml(item.title || '-')}</td>
+          <td>${escapeHtml(item.company || '-')}</td>
+          <td style="font-family:monospace; font-size:13px;">${escapeHtml(item.phone)}</td>
+          <td><span style="font-weight:600; color:#0f172a;">${item.count || 1}</span> 人</td>
+          <td style="color:#64748b; font-size:12.5px;">${escapeHtml(item.note || '-')}</td>
+          <td><span class="pill ${pillClass}">${pillName}</span></td>
+          <td style="font-size:12px; color:#64748b; white-space:nowrap;">${escapeHtml(item.created_at)}</td>
+          <td>
+            <button class="del-btn" onclick="deleteSignup(${item.id})">删除</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function deleteSignup(id) {
+      if (!confirm('确定要删除该条报名记录吗？')) return;
+      try {
+        const res = await fetch(`/api/signups/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.code === 0) {
+          loadSignups();
+        } else {
+          alert(data.error || '删除失败');
+        }
+      } catch (err) {
+        alert('网络请求失败');
+      }
+    }
+
+    function exportCSV() {
+      window.location.href = '/api/signups/export';
+    }
+
+    async function mockTestSignup() {
+      const mockNames = ['陈启明', '林婉儿', '张国梁', '黄思敏', '周振宇'];
+      const mockCompanies = ['翠亨投资集团', '中山数字科技', '大湾区人才发展基金', '深中联合研究院'];
+      const mockTitles = ['总监', '技术负责人', '执行董事', '副总经理'];
+      const mockSlugs = ['red-party', 'green-eco', 'hk-skyline', 'default'];
+
+      const randomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
+      const payload = {
+        name: randomItem(mockNames),
+        company: randomItem(mockCompanies),
+        title: randomItem(mockTitles),
+        phone: '138' + Math.floor(10000000 + Math.random() * 90000000),
+        count: Math.floor(Math.random() * 3) + 1,
+        note: '预约前排贵宾席，需开具增值税专票',
+        nico_invitation_slug: randomItem(mockSlugs),
+      };
+
+      try {
+        const res = await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (data.code === 0) {
+          loadSignups();
+        }
+      } catch (e) {
+        alert('模拟新增失败');
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // 页面初次加载
+    loadSignups();
+  </script>
+</body>
+</html>
