@@ -12,7 +12,7 @@
    python generator.py --config event.example.json
 
 3. 命令行参数直接指定：
-   python generator.py --theme red --envelope --title "深中高质量发展论坛" --output dist/invite.html
+   python generator.py --theme red --envelope --title "深圳高质量发展论坛" --output dist/invite.html
 """
 
 import os
@@ -230,7 +230,7 @@ def interactive_wizard():
 
     print("\n【步骤 3/4】请输入活动核心信息（直接回车使用示例默认值）：")
     title = input("• 活动主标题 [默认: 2026大湾区国资党建与产业高质量发展论坛]: ").strip() or "2026大湾区国资党建与产业高质量发展论坛"
-    subtitle = input("• 副标题/标语 [默认: 深中协同 · 智领未来 · 赋能新质生产力]: ").strip() or "深中协同 · 智领未来 · 赋能新质生产力"
+    subtitle = input("• 副标题/标语 [默认: 深港协同 · 智领未来 · 赋能新质生产力]: ").strip() or "深港协同 · 智领未来 · 赋能新质生产力"
     date_str = input("• 活动时间 [默认: 2026年10月28日 09:00 - 17:30]: ").strip() or "2026年10月28日 09:00 - 17:30"
     location = input("• 活动地点 [默认: 示例市高新区国际会议中心]: ").strip() or "示例市高新区国际会议中心"
     organizer = input("• 主办单位 [默认: 示例科技集团]: ").strip() or "示例科技集团"

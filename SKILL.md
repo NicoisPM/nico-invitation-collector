@@ -75,7 +75,7 @@ python generator.py
 {
   "theme": "red",
   "envelope": true,
-  "title": "2026深中协同高质量发展论坛",
+  "title": "2026深港协同高质量发展论坛",
   "subtitle": "智领未来 · 赋能新质生产力",
   "date": "2026年10月28日 09:00 - 17:30",
   "location": "示例市高新区国际会议中心",
