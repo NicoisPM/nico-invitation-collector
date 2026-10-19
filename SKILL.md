@@ -15,7 +15,7 @@ description: 专业的「高端多页滑动邀请函 H5」+「全栈报名信息
 
 | 主题名称 | 视觉调性与专属底图 | 适用场景 | 直入版 HTML | 3D信封动画版 HTML |
 |---|---|---|---|---|
-| **1. 红色党建国资版** | 故宫红、暖金、深中通道与海面波光矢量图、专属「函」字火漆 | 国资国企、党建联建、大湾区重大工程、高质量发展论坛 | `templates/nico-invitation-red-party.html` | `templates/nico-invitation-red-party-envelope.html` |
+| **1. 红色党建国资版** | 故宫红、暖金、示例跨海通道与海面波光矢量图、专属「函」字火漆 | 国资国企、党建联建、大湾区重大工程、高质量发展论坛 | `templates/nico-invitation-red-party.html` | `templates/nico-invitation-red-party-envelope.html` |
 | **2. 绿色生态青年版** | 翠绿、五桂山多重峦叠水墨矢量图、专属「翠」字火漆 | 青年人才、生态绿色、学术沙龙、创新创业、高校交流 | `templates/nico-invitation-green-eco.html` | `templates/nico-invitation-green-eco-envelope.html` |
 | **3. 维港夜景港澳版** | 国际深蓝、维多利亚港夜景天际线、专属「港」字火漆 | 粤港澳大湾区、深港合作、海外招商、高端金融科技峰会 | `templates/nico-invitation-hk-skyline.html` | `templates/nico-invitation-hk-skyline-envelope.html` |
 | **4. 典雅金调标准版** | 传统宣纸底色、烫金边框、通用雅致古典排版 | 通用商务研讨、企业发布会、中式学术年会 | `templates/nico-invitation-framework.html` | `templates/nico-invitation-envelope.html` |
@@ -78,8 +78,8 @@ python generator.py
   "title": "2026深中协同高质量发展论坛",
   "subtitle": "智领未来 · 赋能新质生产力",
   "date": "2026年10月28日 09:00 - 17:30",
-  "location": "中山市翠亨新区国际会议中心",
-  "organizer": "中山翠亨集团有限公司",
+  "location": "示例市高新区国际会议中心",
+  "organizer": "示例科技集团",
   "price": "免费预约（限额审核）",
   "output": "dist/my-nico-invitation.html"
 }

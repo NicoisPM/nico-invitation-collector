@@ -24,8 +24,8 @@ import re
 TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 
 THEME_MAP = {
-    '1': ('red', '红色党建国资版（深中通道）', 'nico-invitation-red-party.html', 'nico-invitation-red-party-envelope.html'),
-    'red': ('red', '红色党建国资版（深中通道）', 'nico-invitation-red-party.html', 'nico-invitation-red-party-envelope.html'),
+    '1': ('red', '红色党建国资版（示例跨海通道）', 'nico-invitation-red-party.html', 'nico-invitation-red-party-envelope.html'),
+    'red': ('red', '红色党建国资版（示例跨海通道）', 'nico-invitation-red-party.html', 'nico-invitation-red-party-envelope.html'),
     '2': ('green', '绿色青年生态版（五桂山）', 'nico-invitation-green-eco.html', 'nico-invitation-green-eco-envelope.html'),
     'green': ('green', '绿色青年生态版（五桂山）', 'nico-invitation-green-eco.html', 'nico-invitation-green-eco-envelope.html'),
     '3': ('hk', '维港夜景港澳版（香港天际线）', 'nico-invitation-hk-skyline.html', 'nico-invitation-hk-skyline-envelope.html'),
@@ -215,7 +215,7 @@ def interactive_wizard():
     print("="*58)
     
     print("\n【步骤 1/4】请选择视觉设计主题：")
-    print("  [1] 红色党建国资版（深中通道海景 · 庄重宏大）")
+    print("  [1] 红色党建国资版（示例跨海通道海景 · 庄重宏大）")
     print("  [2] 绿色青年生态版（五桂山清新水墨 · 活力创新）")
     print("  [3] 维港夜景港澳版（香港天际线深蓝 · 国际高端）")
     print("  [4] 典雅金调标准版（暖纸烫金宣纸 · 通用政商）")
@@ -232,8 +232,8 @@ def interactive_wizard():
     title = input("• 活动主标题 [默认: 2026大湾区国资党建与产业高质量发展论坛]: ").strip() or "2026大湾区国资党建与产业高质量发展论坛"
     subtitle = input("• 副标题/标语 [默认: 深中协同 · 智领未来 · 赋能新质生产力]: ").strip() or "深中协同 · 智领未来 · 赋能新质生产力"
     date_str = input("• 活动时间 [默认: 2026年10月28日 09:00 - 17:30]: ").strip() or "2026年10月28日 09:00 - 17:30"
-    location = input("• 活动地点 [默认: 中山市翠亨新区国际会议中心]: ").strip() or "中山市翠亨新区国际会议中心"
-    organizer = input("• 主办单位 [默认: 中山翠亨集团有限公司]: ").strip() or "中山翠亨集团有限公司"
+    location = input("• 活动地点 [默认: 示例市高新区国际会议中心]: ").strip() or "示例市高新区国际会议中心"
+    organizer = input("• 主办单位 [默认: 示例科技集团]: ").strip() or "示例科技集团"
     price = input("• 报名费用 [默认: 免费预约（限额审核）]: ").strip() or "免费预约（限额审核）"
 
     print("\n【步骤 4/4】输出设置（遵循成果隔离铁律，默认保存至独立目录）：")
